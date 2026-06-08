@@ -1,0 +1,6 @@
+# Don't commit copyrighted audio files
+*.mp3
+*.ogg
+*.wav
+*.m4a
+!README.md
