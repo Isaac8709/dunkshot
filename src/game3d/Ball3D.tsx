@@ -13,6 +13,9 @@ export const Ball3D = forwardRef<BallHandle, {}>(function Ball3D(_, ref) {
   const root = useRef<THREE.Group>(null!)
   const mesh = useRef<THREE.Mesh>(null!)
   const spinRef = useRef(0)
+  // Target position fed by the game loop; the rendered position eases toward it.
+  const targetPos = useRef(new THREE.Vector3())
+  const hasTarget = useRef(false)
 
   const tex = useMemo(() => {
     const c = document.createElement('canvas')
@@ -46,11 +49,31 @@ export const Ball3D = forwardRef<BallHandle, {}>(function Ball3D(_, ref) {
 
   useImperativeHandle(ref, () => ({
     group: root.current,
-    setPosition(v) { root.current?.position.copy(v) },
+    setPosition(v) {
+      targetPos.current.copy(v)
+      // First placement (or a big intentional jump, e.g. the ball being reset
+      // to bounce away) should snap, not streak across the court.
+      if (!hasTarget.current) {
+        hasTarget.current = true
+        root.current?.position.copy(v)
+      }
+    },
     setSpin(rps) { spinRef.current = rps },
   }))
 
   useFrame((_, dt) => {
+    if (root.current && hasTarget.current) {
+      const p = root.current.position
+      const d = p.distanceTo(targetPos.current)
+      // Small moves (a hand-to-hand handoff, ball following the dunking hand)
+      // get eased so they don't pop. Large jumps (drop→bounce reset, a fresh
+      // possession) snap so the ball never smears through the air.
+      if (d > 0.7) {
+        p.copy(targetPos.current)
+      } else {
+        p.lerp(targetPos.current, 1 - Math.exp(-32 * dt))
+      }
+    }
     if (mesh.current) {
       mesh.current.rotation.x += spinRef.current * dt * Math.PI * 2
       mesh.current.rotation.z += spinRef.current * dt * Math.PI * 1.4

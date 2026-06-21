@@ -153,7 +153,7 @@ export default function Game3D({
       <Canvas
         shadows
         dpr={[1, 2]}
-        camera={{ position: [0, 2.4, 7.5], fov: 58, near: 0.1, far: 120 }}
+        camera={{ position: [0, 5, 11], fov: 60, near: 0.1, far: 120 }}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
       >
         {/* Lighting */}
@@ -253,7 +253,7 @@ export default function Game3D({
           fontFamily: 'system-ui,sans-serif', pointerEvents: 'none',
           textAlign: 'center', maxWidth: 360,
         }}>
-          ← ↑ ↓ → 이동 · ⎵ 덩크 · A/S/D/W/Q/E... 누른 채 ⎵ = 특수 덩크
+          ← ↑ ↓ → 이동 · ⎵ 가까이서 덩크 / 멀리서 슈팅 · A/S/D/W/Q/E... 누른 채 ⎵ = 특수 덩크
         </div>
       )}
     </div>

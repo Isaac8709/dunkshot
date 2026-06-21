@@ -214,8 +214,11 @@ export function Hoop3D({ netImpulse, onDecay }: Hoop3DProps) {
       {/* ─── RIM (thick orange torus + 14 net hooks) ─── */}
       <group ref={rimRef as unknown as React.MutableRefObject<THREE.Group>} position={[0, COURT.rimY, 0]}>
         {/* Rim ring — NBA spec 5/8" diameter steel = ~16 mm radius, but visually
-            beefed to 30 mm so it reads cleanly from a 9.5m back-view angle */}
-        <mesh castShadow>
+            beefed to 30 mm so it reads cleanly from a 9.5m back-view angle.
+            Torus is rotated +90° about X so the ring lies FLAT (horizontal,
+            opening up) like a real hoop — three.js builds a torus in the XY
+            plane by default, i.e. standing vertically. */}
+        <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[COURT.rimRadius, 0.030, 20, 64]} />
           <meshStandardMaterial
             color={orange}
@@ -226,7 +229,7 @@ export function Hoop3D({ netImpulse, onDecay }: Hoop3DProps) {
           />
         </mesh>
         {/* Inner highlight torus (catches rim-light from arena spots) */}
-        <mesh>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[COURT.rimRadius, 0.014, 12, 48]} />
           <meshStandardMaterial color="#FFB070" emissive="#FF7030" emissiveIntensity={0.55} />
         </mesh>

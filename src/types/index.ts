@@ -130,3 +130,46 @@ export interface GameState {
   isJumping: boolean
   lastDunkAt: number
 }
+
+/** Per-dunk attempt result captured during a session. */
+export interface DunkAttempt {
+  dunkId: string          // matches DunkSpec.id
+  dunkName: string        // human-readable Korean name
+  tier: 'perfect' | 'good' | 'normal' | 'miss'
+  points: number
+  grade: 'S' | 'A' | 'B' | 'C' | 'D'
+  distance: number        // launch distance in meters
+  at: number              // performance.now() relative to session start (ms)
+}
+
+/** Aggregated stats for a single time-attack play. */
+export interface GameRunResult {
+  /** ISO 8601 timestamp of when the run ENDED. */
+  endedAt: string
+  score: number
+  totalDunks: number
+  perfects: number
+  maxCombo: number
+  /** Per-dunk-id success/failure counters for this run. */
+  perDunk: Record<string, { attempts: number; made: number; miss: number; bestTier: 'perfect' | 'good' | 'normal' | 'miss' }>
+  /** Full ordered timeline of attempts (used for cue extraction). */
+  attempts: DunkAttempt[]
+  /** Trailing 3 missed dunk IDs — what the coach should focus on next. */
+  recentMisses: string[]
+  /** Average launch distance across made dunks (m). */
+  avgDistance: number
+}
+
+/** Auto-generated workout recommendation derived from recent GameRunResult. */
+export interface PrescribedWorkout {
+  date: string
+  source: 'auto-from-game' | 'manual'
+  /** Short human-readable diagnosis ("후미손목 약함 → 핸드 컨트롤 보강") */
+  diagnosis: string
+  /** 'low' = warmup/skills, 'med' = standard, 'high' = peaking */
+  intensity: 'low' | 'med' | 'high'
+  exercises: ExerciseTemplate[]
+  /** Which dunk IDs this plan is targeting (so user sees the link to gameplay). */
+  targetDunks: string[]
+}
+

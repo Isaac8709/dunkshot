@@ -25,6 +25,7 @@ export type DunkId =
   | 'basic_two' | 'basic_one' | 'reverse' | 'windmill' | 'tomahawk'
   | 'three_sixty' | 'between_legs' | 'alleyoop' | 'cradle' | 'putback'
   | 'tip_dunk' | 'chaser' | 'double_pump' | 'freethrow_line' | 'eastbay'
+  | 'jumpshot' // out-of-dunk-range fallback — not in the dunk catalog
 
 export interface DunkSpec {
   id: DunkId

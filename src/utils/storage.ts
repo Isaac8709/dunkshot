@@ -1,4 +1,4 @@
-import type { UserProfile, WorkoutSession, CommunityPost } from '@/types'
+import type { UserProfile, WorkoutSession, CommunityPost, GameRunResult } from '@/types'
 
 const KEYS = {
   PROFILE: 'dunkshot_profile',
@@ -7,7 +7,10 @@ const KEYS = {
   COMMUNITY: 'dunkshot_community',
   SETTINGS: 'dunkshot_settings',
   HIGHSCORE: 'dunkshot_highscore',
+  GAME_RUNS: 'dunkshot_game_runs',     // last N play results
 }
+
+const MAX_RUNS_STORED = 20
 
 export const storage = {
   saveProfile(profile: UserProfile) {
@@ -62,6 +65,22 @@ export const storage = {
   loadHighScore(): number {
     const raw = localStorage.getItem(KEYS.HIGHSCORE)
     return raw ? parseInt(raw) || 0 : 0
+  },
+
+  // ---- Game run history ----
+  saveGameRun(run: GameRunResult) {
+    const runs = this.loadGameRuns()
+    runs.unshift(run)
+    localStorage.setItem(KEYS.GAME_RUNS, JSON.stringify(runs.slice(0, MAX_RUNS_STORED)))
+  },
+  loadGameRuns(): GameRunResult[] {
+    const raw = localStorage.getItem(KEYS.GAME_RUNS)
+    if (!raw) return []
+    try { return JSON.parse(raw) } catch { return [] }
+  },
+  /** The single most recent run (used by the training prescription engine). */
+  loadLastGameRun(): GameRunResult | null {
+    return this.loadGameRuns()[0] || null
   },
 }
 
