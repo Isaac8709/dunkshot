@@ -1,0 +1,19 @@
+{
+  "projectId": "2da07b98-b80e-4a2c-a8fd-0f95b6de48ea",
+  "pkg": "dunk-shot",
+  "globalName": "DunkShotUI",
+  "shape": "package",
+  "srcDir": "src",
+  "tsconfig": ".design-sync/build/tsconfig.dssync.json",
+  "cssEntry": ".design-sync/build/ds-styles.css",
+  "componentSrcMap": {
+    "TiltCard": "src/components/TiltCard.tsx",
+    "ScreenTransition": "src/components/ScreenTransition.tsx",
+    "SettingsPanel": "src/components/SettingsPanel.tsx",
+    "ExerciseModal": "src/components/ExerciseModal.tsx"
+  },
+  "overrides": {
+    "SettingsPanel": { "cardMode": "single", "viewport": "420x560" },
+    "ExerciseModal": { "cardMode": "single", "viewport": "420x680" }
+  }
+}
