@@ -86,7 +86,9 @@ export function GameWorld({ unlockedDunkIds, heldKeys, shootTrigger, onDunkEvent
       // Out of dunk range → JUMP SHOT instead. Distance decides 2pt vs 3pt
       // and the make probability.
       if (dist > spec.maxDistance + 0.05) {
-        facingRef.current = Math.atan2(pos.x, pos.z) // square up to the rim
+        // Square up to the rim: face FROM the player TOWARD the rim at (0,0).
+        // (Model forward is +z, so yaw for a direction d is atan2(d.x, d.z).)
+        facingRef.current = Math.atan2(-pos.x, -pos.z)
         const three = dist > COURT.threePtRadius - 0.05
         const made = Math.random() < THREE.MathUtils.clamp(0.93 - dist * 0.06, 0.25, 0.93)
         actionRef.current = {
@@ -130,7 +132,10 @@ export function GameWorld({ unlockedDunkIds, heldKeys, shootTrigger, onDunkEvent
         pos.x = THREE.MathUtils.clamp(pos.x, -COURT.width / 2 + 0.5, COURT.width / 2 - 0.5)
         // Keep the player in front of the broadcast camera (which sits at z≈10).
         pos.z = THREE.MathUtils.clamp(pos.z, -0.5, 8.5)
-        const angle = Math.atan2(-v.x, -v.z)
+        // Face the direction of travel (model forward is +z → yaw = atan2(dx, dz)).
+        // The old negated form made the player moonwalk — visible when backing
+        // away from the rim and then shooting "backwards".
+        const angle = Math.atan2(v.x, v.z)
         // Shortest-path turn so the player never spins the long way round.
         let dA = angle - facingRef.current
         while (dA > Math.PI) dA -= Math.PI * 2
@@ -168,7 +173,7 @@ export function GameWorld({ unlockedDunkIds, heldKeys, shootTrigger, onDunkEvent
         const speed = THREE.MathUtils.clamp(3.5 + d * 1.6, 4.0, 7.5)
         to.normalize()
         pos.addScaledVector(to, Math.min(d, speed * dt))
-        const angle = Math.atan2(-to.x, -to.z)
+        const angle = Math.atan2(to.x, to.z)
         let dA = angle - facingRef.current
         while (dA > Math.PI) dA -= Math.PI * 2
         while (dA < -Math.PI) dA += Math.PI * 2
@@ -192,7 +197,7 @@ export function GameWorld({ unlockedDunkIds, heldKeys, shootTrigger, onDunkEvent
       a.t += dt
       const tn = Math.min(1, a.t / a.duration)
       pos.lerpVectors(a.from, a.targetXZ.clone().setY(0), tn * 0.3)
-      facingRef.current = Math.atan2(-(a.targetXZ.x - a.from.x), -(a.targetXZ.z - a.from.z))
+      facingRef.current = Math.atan2(a.targetXZ.x - a.from.x, a.targetXZ.z - a.from.z)
 
       // Use first keyframe of choreography (launch pose) but with prep-phase squat.
       // Arms swing BEHIND the back (scaled by the dunk's armWindup) so the jump
