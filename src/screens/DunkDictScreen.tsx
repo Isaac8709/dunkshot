@@ -75,7 +75,7 @@ export default function DunkDictScreen() {
   return (
     <div className="fixed inset-0 arena-bg flex flex-col safe-top safe-bottom">
       <div className="flex items-center gap-3 px-5 pt-4 pb-3">
-        <button onClick={() => setScreen('menu')} className="text-gray-400 text-xl">←</button>
+        <button onClick={() => setScreen('menu')} aria-label="뒤로" className="text-gray-400 text-xl press w-10 h-10 -ml-2 flex items-center justify-center">←</button>
         <div className="flex-1">
           <h2 className="text-white font-black text-xl">덩크 도감</h2>
           <p className="text-gray-500 text-xs">
@@ -109,7 +109,7 @@ export default function DunkDictScreen() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-2">
+      <div key={filter} className="flex-1 overflow-y-auto px-5 pb-5 space-y-2 stagger-children">
         {filtered.map(dunk => (
           <DunkCard key={dunk.id} dunk={dunk} onSelect={setSelected} />
         ))}
@@ -117,9 +117,9 @@ export default function DunkDictScreen() {
 
       {/* Detail modal */}
       {selected && (
-        <div className="fixed inset-0 bg-black/85 z-20 flex items-end" onClick={() => setSelected(null)}>
+        <div className="fixed inset-0 bg-black/85 z-20 flex items-end screen-fade-in" onClick={() => setSelected(null)}>
           <div
-            className="bg-dark-800 rounded-t-3xl w-full p-6 safe-bottom"
+            className="bg-dark-800 rounded-t-3xl w-full p-6 safe-bottom sheet-up"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-start gap-4 mb-5">

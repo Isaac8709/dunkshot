@@ -1,20 +1,27 @@
 import { useGameStore } from '@/store/useGameStore'
 import { calculateDunkRequirement } from '@/utils/trainingCalculator'
+import { useCountUp } from '@/utils/useCountUp'
 import { format, parseISO, startOfMonth, eachDayOfInterval, endOfMonth, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
 export default function ProgressScreen() {
   const { profile, sessions, setScreen } = useGameStore()
-  if (!profile) return null
 
-  const req = calculateDunkRequirement(profile)
   const jumpSessions = sessions.filter(s => s.verticalJump).sort((a, b) =>
     new Date(a.date).getTime() - new Date(b.date).getTime()
   )
 
-  const latestJump = jumpSessions[jumpSessions.length - 1]?.verticalJump || profile.currentVertical
-  const firstJump = profile.currentVertical
+  const latestJump = jumpSessions[jumpSessions.length - 1]?.verticalJump || profile?.currentVertical || 0
+  const firstJump = profile?.currentVertical || 0
   const improvement = latestJump - firstJump
+
+  // Hooks must run unconditionally — count-ups live above the profile guard.
+  const req = profile ? calculateDunkRequirement(profile) : null
+  const progressPctRaw = req ? Math.min(100, Math.round((latestJump / req.requiredVertical) * 100)) : 0
+  const progressPctDisplay = useCountUp(progressPctRaw)
+  const latestJumpDisplay = useCountUp(latestJump)
+
+  if (!profile || !req) return null
 
   // Calendar
   const today = new Date()
@@ -40,7 +47,7 @@ export default function ProgressScreen() {
     return streak
   })()
 
-  const progressPct = Math.min(100, Math.round((latestJump / req.requiredVertical) * 100))
+  const progressPct = progressPctRaw
 
   // Jump history for mini chart
   const chartData = [
@@ -56,14 +63,14 @@ export default function ProgressScreen() {
   return (
     <div className="fixed inset-0 arena-bg flex flex-col safe-top safe-bottom">
       <div className="flex items-center gap-3 px-5 pt-4 pb-3">
-        <button onClick={() => setScreen('menu')} className="text-white/60 text-xl press w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">←</button>
+        <button onClick={() => setScreen('menu')} aria-label="뒤로" className="text-white/60 text-xl press w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">←</button>
         <div>
           <p className="eyebrow text-orange-300/70">STATS · 성장 기록</p>
           <h2 className="title-display text-2xl">나의 성장</h2>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-4">
+      <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-4 stagger-children">
         {/* Main progress ring */}
         <div className="card-dark p-5">
           <div className="flex items-center gap-5">
@@ -86,7 +93,7 @@ export default function ProgressScreen() {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-orange-400 font-black text-2xl">{progressPct}%</span>
+                <span className="text-orange-400 font-black text-2xl">{progressPctDisplay}%</span>
                 <span className="text-gray-500 text-xs">달성</span>
               </div>
             </div>
@@ -94,7 +101,7 @@ export default function ProgressScreen() {
             <div className="flex-1 space-y-2">
               <div>
                 <p className="text-gray-500 text-xs">현재 점프력</p>
-                <p className="text-white font-black text-2xl">{latestJump}<span className="text-sm text-gray-400">cm</span></p>
+                <p className="text-white font-black text-2xl">{latestJumpDisplay}<span className="text-sm text-gray-400">cm</span></p>
               </div>
               <div>
                 <p className="text-gray-500 text-xs">목표</p>
@@ -138,7 +145,16 @@ export default function ProgressScreen() {
           ))}
         </div>
 
-        {/* Jump chart */}
+        {/* Jump chart — empty state until there are at least 2 data points */}
+        {chartData.length <= 1 && (
+          <div className="card-dark p-5 text-center">
+            <h3 className="text-white font-bold mb-2 text-sm">수직 점프 성장 그래프</h3>
+            <p className="text-3xl mb-2">📈</p>
+            <p className="text-gray-500 text-xs leading-relaxed">
+              훈련 기록에 점프 측정값을 남기면<br />성장 그래프가 여기에 나타나요
+            </p>
+          </div>
+        )}
         {chartData.length > 1 && (
           <div className="card-dark p-4">
             <h3 className="text-white font-bold mb-3 text-sm">수직 점프 성장 그래프</h3>

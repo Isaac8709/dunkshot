@@ -92,7 +92,7 @@ export default function TrainingScreen() {
     <div className="fixed inset-0 arena-bg flex flex-col safe-top safe-bottom">
       {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-4 pb-3">
-        <button onClick={() => setScreen('menu')} className="text-gray-400 text-xl">←</button>
+        <button onClick={() => setScreen('menu')} aria-label="뒤로" className="text-gray-400 text-xl press w-10 h-10 -ml-2 flex items-center justify-center">←</button>
         <div className="flex-1">
           <h2 className="text-white font-black text-xl">훈련 계획</h2>
           <p className="text-gray-500 text-xs">실제 덩크를 위한 코칭 · 플라이오 · 시뮬레이션 연동</p>
@@ -119,7 +119,7 @@ export default function TrainingScreen() {
 
       <div className="flex-1 overflow-y-auto px-5 pb-5">
         {activeTab === 'today' && (
-          <div className="space-y-4 screen-enter">
+          <div className="space-y-4 stagger-children">
 
             <div className="card-dark p-4 border border-orange-400/20 relative overflow-hidden">
               <div className="absolute -right-10 -top-10 w-28 h-28 rounded-full bg-orange-400/10 blur-2xl" />
@@ -219,7 +219,7 @@ export default function TrainingScreen() {
         )}
 
         {activeTab === 'plan' && (
-          <div className="space-y-4 screen-enter">
+          <div className="space-y-4 stagger-children">
             {plan.map(phase => (
               <div key={phase.phase} className="card-dark p-4">
                 <div className="flex items-center gap-3 mb-3">
@@ -304,13 +304,13 @@ export default function TrainingScreen() {
         <ExerciseModal exercise={selectedExercise} onClose={() => setSelectedExercise(null)} />
       )}
 
-      {/* Log modal */}
+      {/* Log sheet — no backdrop-tap close: protects in-progress entries (ui-motion spec exception) */}
       {logging && (
-        <div className="fixed inset-0 bg-black/80 z-20 flex items-end">
-          <div className="bg-dark-800 rounded-t-3xl w-full p-5 max-h-[85vh] overflow-y-auto safe-bottom">
+        <div className="fixed inset-0 bg-black/80 z-20 flex items-end screen-fade-in">
+          <div className="bg-dark-800 rounded-t-3xl w-full p-5 max-h-[85vh] overflow-y-auto safe-bottom sheet-up">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white font-black text-lg">훈련 기록</h3>
-              <button onClick={() => setLogging(false)} className="text-gray-400 text-xl">✕</button>
+              <button onClick={() => setLogging(false)} aria-label="닫기" className="text-gray-400 text-xl press w-10 h-10 -mr-2 flex items-center justify-center">✕</button>
             </div>
 
             <div className="space-y-4">

@@ -67,7 +67,7 @@ export default function SetupScreen() {
       {/* Header */}
       <div className="px-6 pt-4 pb-3 flex items-center gap-3">
         {step > 1 && (
-          <button onClick={() => setStep(s => s - 1)} className="text-gray-400 text-lg">←</button>
+          <button onClick={() => setStep(s => s - 1)} aria-label="이전 단계" className="text-gray-400 text-lg press w-10 h-10 -ml-2 flex items-center justify-center">←</button>
         )}
         <div className="flex-1">
           <h2 className="text-white font-black text-xl">캐릭터 설정</h2>
@@ -92,7 +92,8 @@ export default function SetupScreen() {
               <div className="flex justify-center gap-3 mt-3 flex-wrap">
                 {AVATARS.map(a => (
                   <button key={a} onClick={() => update('avatar', a)}
-                    className={`text-2xl p-2 rounded-xl transition-all ${
+                    aria-label={`아바타 ${a}`}
+                    className={`text-2xl p-2 rounded-xl transition-all press ${
                       form.avatar === a ? 'bg-orange-500 scale-110' : 'bg-dark-700'
                     }`}>
                     {a}
@@ -229,7 +230,8 @@ export default function SetupScreen() {
       </div>
 
       {/* Sticky action footer — always visible, never hidden by scroll */}
-      <div className="px-6 py-4 border-t border-white/10 bg-black/40 backdrop-blur safe-bottom">
+      {/* wrapper already applies safe-bottom — don't double it here */}
+      <div className="px-6 py-4 border-t border-white/10 bg-black/40 backdrop-blur">
         {step === 1 && (
           <button onClick={() => setStep(2)} disabled={!form.name}
             className="btn-neon w-full text-base font-bold disabled:opacity-40">

@@ -57,15 +57,25 @@ export default function ExerciseModal({ exercise, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-30 flex items-center justify-center px-4">
-      <div className="bg-dark-800 rounded-3xl w-full max-w-sm p-5 border border-gray-700/50">
+    <div
+      className="fixed inset-0 bg-black/85 z-30 flex items-center justify-center px-4 screen-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="bg-dark-800 rounded-3xl w-full max-w-sm p-5 border border-gray-700/50 sheet-up"
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
             <h3 className="text-white font-black text-lg">{exercise.nameKo}</h3>
             <p className="text-gray-500 text-xs">{exercise.name}</p>
           </div>
-          <button onClick={onClose} className="text-gray-500 text-xl leading-none ml-3">✕</button>
+          <button
+            onClick={onClose}
+            aria-label="닫기"
+            className="w-10 h-10 -mr-2 -mt-1 flex items-center justify-center text-gray-500 text-xl leading-none press"
+          >✕</button>
         </div>
 
         {/* Phaser Animation */}

@@ -314,6 +314,15 @@ html, body, #root {
   to   { opacity: 1; }
 }
 
+/* Bottom-sheet / modal content entrance (backdrop pairs with .screen-fade-in) */
+.sheet-up {
+  animation: sheetUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(48px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .stagger-children > * {
   opacity: 0;
   animation: slideUpKf 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
@@ -326,6 +335,9 @@ html, body, #root {
 .stagger-children > *:nth-child(6) { animation-delay: 0.34s; }
 .stagger-children > *:nth-child(7) { animation-delay: 0.40s; }
 .stagger-children > *:nth-child(8) { animation-delay: 0.46s; }
+/* Long lists: children 9+ share one tail delay so they never pop in
+   BEFORE their earlier siblings (they're below the fold anyway). */
+.stagger-children > *:nth-child(n+9) { animation-delay: 0.52s; }
 
 @keyframes slideUpKf {
   from { opacity: 0; transform: translateY(28px); }

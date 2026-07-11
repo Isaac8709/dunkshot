@@ -17,6 +17,14 @@ export function useCountUp(value: number, duration = 900) {
     fromRef.current = display
     startRef.current = null
 
+    // Respect reduced-motion: rAF animations aren't covered by the global
+    // CSS media query, so snap straight to the final value here.
+    if (typeof window !== 'undefined' &&
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setDisplay(value)
+      return
+    }
+
     const tick = (now: number) => {
       if (startRef.current === null) startRef.current = now
       const elapsed = now - startRef.current

@@ -3,6 +3,7 @@ import { useGameStore } from '@/store/useGameStore'
 import type { DunkFeedback } from '@/game/scenes/CourtScene'
 import { audioManager } from '@/utils/audio'
 import { storage } from '@/utils/storage'
+import { useCountUp } from '@/utils/useCountUp'
 
 const PhaserGame = lazy(() => import('@/game3d/Game3D'))
 
@@ -20,6 +21,8 @@ export default function GameScreen() {
   const [sessionFocus, setSessionFocus] = useState('림 접근 S등급 3회 · 서로 다른 덩크 5종 성공')
   const [gameOver, setGameOver] = useState<null | { score: number; dunks: number; maxCombo: number; perfects: number; best: number; isNewBest: boolean }>(null)
   const [restartKey, setRestartKey] = useState(0)
+  // Final-score ticker for the session report (spec: dashboard-grade numbers count up)
+  const finalScoreDisplay = useCountUp(gameOver?.score ?? 0, 1200)
 
   // On mount, remove focus from any React button so SPACE doesn't accidentally
   // trigger a "click" on (for example) the EXIT button.
@@ -65,13 +68,18 @@ export default function GameScreen() {
     comboDeadlineRef.current = Date.now() + 4000  // 4s window for next combo
   }
 
-  // Update combo meter every 50ms — drains over 4s after each dunk
+  // Combo meter drain — rAF-driven so it stays frame-synced (a 50ms
+  // setInterval visibly steps at 20fps on 60/120Hz screens). Stops ticking
+  // while the meter is empty and resumes on the next combo.
   useEffect(() => {
-    const t = setInterval(() => {
+    let raf: number
+    const tick = () => {
       const remaining = Math.max(0, comboDeadlineRef.current - Date.now())
-      setComboMs(remaining)
-    }, 50)
-    return () => clearInterval(t)
+      setComboMs(prev => (prev === remaining ? prev : remaining))
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
   }, [])
 
   const handleDunkPerformed = (dunkId: string) => {
@@ -356,8 +364,8 @@ export default function GameScreen() {
         </div>
       )}
 
-      {/* Big mobile dunk button — right */}
-      <div className="absolute bottom-5 right-4 z-20">
+      {/* Big mobile dunk button — right (kept above the iOS home indicator) */}
+      <div className="absolute right-4 z-20" style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }}>
         <button
           className="relative w-20 h-20 rounded-full text-white font-black active:scale-90 transition-transform"
           style={{
@@ -400,8 +408,8 @@ export default function GameScreen() {
         </button>
       </div>
 
-      {/* Keyboard hint — auto-collapses */}
-      <div className="absolute bottom-5 left-4 z-20">
+      {/* Keyboard hint — auto-collapses (kept above the iOS home indicator) */}
+      <div className="absolute left-4 z-20" style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }}>
         <button
           onClick={() => setShowHint(s => !s)}
           className="press w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white/80 text-base backdrop-blur"
@@ -470,11 +478,11 @@ export default function GameScreen() {
 
 
       {gameOver && (
-        <div className="absolute inset-0 z-50 bg-black/82 backdrop-blur-sm flex items-center justify-center px-5">
-          <div className="w-full max-w-[380px] rounded-3xl border border-orange-300/40 bg-[#090d1a] p-6 text-center shadow-2xl">
+        <div className="absolute inset-0 z-50 bg-black/82 backdrop-blur-sm flex items-center justify-center px-5 screen-fade-in">
+          <div className="w-full max-w-[380px] rounded-3xl border border-orange-300/40 bg-[#090d1a] p-6 text-center shadow-2xl animate-pop-in">
             <p className="eyebrow text-orange-300 mb-2">DUNK LAB SESSION REPORT</p>
             <h2 className="text-white text-3xl font-black mb-1">{gameOver.isNewBest ? '신기록!' : '훈련 완료'}</h2>
-            <p className="text-orange-300 font-black text-4xl my-4" style={{ fontFamily: '"Press Start 2P", monospace' }}>{gameOver.score}</p>
+            <p className="text-orange-300 font-black text-4xl my-4" style={{ fontFamily: '"Press Start 2P", monospace' }}>{finalScoreDisplay}</p>
             <div className="grid grid-cols-3 gap-2 mb-4">
               <div className="rounded-xl bg-white/5 p-3"><p className="text-white/40 text-[10px]">DUNKS</p><p className="text-white font-black">{gameOver.dunks}</p></div>
               <div className="rounded-xl bg-white/5 p-3"><p className="text-white/40 text-[10px]">MAX COMBO</p><p className="text-white font-black">×{gameOver.maxCombo}</p></div>
@@ -485,7 +493,7 @@ export default function GameScreen() {
             </p>
             <div className="flex gap-2">
               <button onClick={restart} className="btn-neon flex-1 py-3 text-sm font-black">다시 훈련</button>
-              <button onClick={() => setScreen('training')} className="flex-1 rounded-xl bg-white/10 text-white font-black py-3 text-sm">훈련 플랜</button>
+              <button onClick={() => setScreen('training')} className="btn-ghost flex-1 py-3 text-sm font-black">훈련 플랜</button>
             </div>
           </div>
         </div>
