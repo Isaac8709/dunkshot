@@ -132,6 +132,7 @@ export default function TrainingScreen() {
                 <div className="rounded-xl bg-white/5 p-3"><p className="text-white font-bold">시뮬레이션</p><p className="text-gray-400 mt-1">60초 덩크 랩 점수로 실전 감각 확인</p></div>
               </div>
               <button onClick={() => setScreen('game')} className="btn-neon w-full mt-4 text-sm py-3 font-black">덩크 랩으로 측정하기 →</button>
+              <button onClick={() => setScreen('tactics')} className="btn-ghost w-full mt-2 text-sm py-3 font-black">🧠 픽앤롤 전술 훈련 (2 대 2) →</button>
             </div>
 
             {/* Today's plan */}

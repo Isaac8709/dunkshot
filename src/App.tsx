@@ -6,6 +6,7 @@ import SplashScreen from '@/screens/SplashScreen'
 import SetupScreen from '@/screens/SetupScreen'
 import MainMenuScreen from '@/screens/MainMenuScreen'
 import GameScreen from '@/screens/GameScreen'
+import TacticsScreen from '@/screens/TacticsScreen'
 import TrainingScreen from '@/screens/TrainingScreen'
 import ProgressScreen from '@/screens/ProgressScreen'
 import DunkDictScreen from '@/screens/DunkDictScreen'
@@ -38,6 +39,7 @@ export default function App() {
           {screen === 'setup'     && <SetupScreen />}
           {screen === 'menu'      && <MainMenuScreen />}
           {screen === 'game'      && <GameScreen />}
+          {screen === 'tactics'   && <TacticsScreen />}
           {screen === 'training'  && <TrainingScreen />}
           {screen === 'progress'  && <ProgressScreen />}
           {screen === 'dunks'     && <DunkDictScreen />}

@@ -116,6 +116,7 @@ export type AppScreen =
   | 'setup'
   | 'menu'
   | 'game'
+  | 'tactics'
   | 'training'
   | 'progress'
   | 'dunks'

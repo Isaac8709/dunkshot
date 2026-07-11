@@ -7,7 +7,7 @@ import SettingsPanel from '@/components/SettingsPanel'
 import TiltCard from '@/components/TiltCard'
 
 type SecondaryItem = {
-  screen: 'training' | 'progress' | 'dunks' | 'community'
+  screen: 'training' | 'progress' | 'dunks' | 'community' | 'tactics'
   icon: string
   title: string
   caption: string
@@ -19,6 +19,9 @@ const SECONDARY: SecondaryItem[] = [
   { screen: 'training',  icon: '💪', title: '훈련',     caption: 'TRAINING',
     gradient: 'linear-gradient(135deg, #5BC0EB 0%, #2E86AB 100%)',
     glow: 'rgba(91,192,235,0.35)' },
+  { screen: 'tactics',   icon: '🧠', title: '전술',     caption: 'PLAYBOOK',
+    gradient: 'linear-gradient(135deg, #E63946 0%, #9B2335 100%)',
+    glow: 'rgba(230,57,70,0.35)' },
   { screen: 'progress',  icon: '📈', title: '성장',     caption: 'STATS',
     gradient: 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)',
     glow: 'rgba(34,197,94,0.35)' },
@@ -47,7 +50,7 @@ export default function MainMenuScreen() {
   const sessionDisplay = useCountUp(totalSessions, 900)
   const dunkDisplay = useCountUp(unlockedDunkIds.length, 900)
 
-  const go = (s: 'game' | 'training' | 'progress' | 'dunks' | 'community') => {
+  const go = (s: 'game' | 'training' | 'progress' | 'dunks' | 'community' | 'tactics') => {
     audioManager.playSfx('tap')
     setScreen(s)
   }
